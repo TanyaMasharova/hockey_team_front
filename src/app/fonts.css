@@ -10,9 +10,17 @@
 :root {
   --p: normal normal clamp(18px, 1.6vw, 32px) 'Myriad Pro Regular';
   --h1: normal bold clamp(48px, 3.75vw, 72px) 'Myriad Pro Semibold';
+
+  --primary-text-color: #ffffff;
+  --secondary-text-color: #000000;
 }
 
 p {
   color: var(--primary-text-color);
   font: var(--p);
+}
+
+h1 {
+  color: var(--secondary-text-color);
+  font: var(--h1);
 }
