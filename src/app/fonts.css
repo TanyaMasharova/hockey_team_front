@@ -1,0 +1,18 @@
+@font-face {
+  font-family: 'Myriad Pro Semibold';
+  src: url('../shared/assets/fonts/myriadpro-semibold.ttf');
+}
+
+@font-face {
+  font-family: 'Myriad Pro Regular';
+  src: url('../shared/assets/fonts/ofont.ru_Myriad\ Pro.ttf');
+}
+:root {
+  --p: normal normal clamp(18px, 1.6vw, 32px) 'Myriad Pro Regular';
+  --h1: normal bold clamp(48px, 3.75vw, 72px) 'Myriad Pro Semibold';
+}
+
+p {
+  color: var(--primary-text-color);
+  font: var(--p);
+}

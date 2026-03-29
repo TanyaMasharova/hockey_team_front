@@ -1,0 +1,16 @@
+.mainContainer {
+  background-color: var(--background-color);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  padding-block: clamp(40px, 3.5vw, 50px);
+  padding-inline: clamp(100px, 8vw, 160px);
+}
+
+.linksContainer {
+  display: flex;
+  flex-direction: row;
+  gap: clamp(30px, 4vw, 60px);
+  align-items: center;
+}
