@@ -1,3 +1,4 @@
+'use client'; //////
 import { Header } from '@/widgets/Header';
 import styles from './main.module.css';
 import Image from 'next/image';
