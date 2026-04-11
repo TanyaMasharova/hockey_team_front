@@ -1,7 +1,8 @@
 export interface Match {
   id: string;
   opponent: string;
-  opponentIconSrc: string;
-  homeAway: 'home' | 'away';
-  date: Date;
+  logo_opponent: string;
+  // opponentIconSrc: string;
+  home_away: 'home' | 'away';
+  match_date: string;
 }
