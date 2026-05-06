@@ -11,7 +11,7 @@ const links: LinkHeader[] = [
   { name: 'Купить билет', href: '/buyTicket' },
   {
     name: 'Расписание игр',
-    href: '/timetable',
+    href: '/schedule',
   },
 ];
 

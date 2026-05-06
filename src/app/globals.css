@@ -4,6 +4,27 @@
 :root {
   --background: #ffffff;
   --background-color: #101115;
+  --primary-color: #61aaf8;
+
+  /* Цвета для побед */
+  --chart-win-main: #4caf50;
+  --chart-win-regular: #4caf50;
+  --chart-win-overtime: #81c784;
+  --chart-win-penalty: #a5d6a7;
+
+  /* Цвета для поражений */
+  --chart-loss-main: #f44336;
+  --chart-loss-regular: #f44336;
+  --chart-loss-overtime: #e57373;
+  --chart-loss-penalty: #ef9a9a;
+
+  /* Текст */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+
+  /* Tooltip */
+  --tooltip-bg: #ffffff;
+  --tooltip-border: #e0e0e0;
 }
 
 body {

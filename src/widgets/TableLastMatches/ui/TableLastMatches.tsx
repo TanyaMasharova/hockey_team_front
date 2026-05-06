@@ -1,5 +1,4 @@
-import styles from './TableMatches.module.css';
-import { MatchFuture } from '@/entities/Match';
+import styles from './TableLastMatches.module.css';
 import {
   Table,
   TableBody,
@@ -9,22 +8,17 @@ import {
   TableRow,
   Paper,
   Avatar,
-  IconButton,
   Box,
   Typography,
 } from '@mui/material';
-import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import { MatchLast } from '@/entities/Match';
 
 interface TableMatchesProps {
-  matches: MatchFuture[];
+  matches: MatchLast[];
   count?: number;
 }
 
-export const TableMatches = ({ matches, count }: TableMatchesProps) => {
-  const handleClick = () => {
-    console.log('Реализовать переход по ссылке на покупку билета');
-  };
-
+export const TableLastMatches = ({ matches, count }: TableMatchesProps) => {
   const formatMatchDate = (dateString: string) => {
     const date = new Date(dateString);
 
@@ -41,8 +35,27 @@ export const TableMatches = ({ matches, count }: TableMatchesProps) => {
     return { day, weekday };
   };
 
+  // Определяем победа или поражение
+  const isWin = (ourScore: number, opponentScore: number) => {
+    return ourScore > opponentScore;
+  };
+
+  // Форматируем счет с суффиксом
+  const formatScore = (
+    ourScore: number,
+    opponentScore: number,
+    winType: 'regular' | 'overtime' | 'penalty'
+  ) => {
+    let suffix = '';
+    if (winType === 'overtime') {
+      suffix = ' (ОТ)';
+    } else if (winType === 'penalty') {
+      suffix = ' (Б)';
+    }
+    return `${ourScore} : ${opponentScore}${suffix}`;
+  };
+
   return (
-    // <div className={styles.mainContainer}>
     <TableContainer component={Paper} className={styles.tableContainer}>
       <Table aria-label="matches table">
         <TableHead>
@@ -50,12 +63,16 @@ export const TableMatches = ({ matches, count }: TableMatchesProps) => {
             <TableCell align="center"></TableCell>
             <TableCell>Дата</TableCell>
             <TableCell>Соперник</TableCell>
-            <TableCell align="center">Билеты</TableCell>
+            <TableCell align="center">Счёт</TableCell>
+            <TableCell align="center">Статус</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {matches.slice(0, count).map(match => {
             const formattedDate = formatMatchDate(match.match_date);
+            const win = isWin(match.our_score, match.opponent_score);
+            const scoreText = formatScore(match.our_score, match.opponent_score, match.win_type);
+
             return (
               <TableRow key={match.id} hover>
                 <TableCell align="center">
@@ -76,7 +93,6 @@ export const TableMatches = ({ matches, count }: TableMatchesProps) => {
                   <Box className={styles.opponentBox}>
                     <Avatar
                       src={`/icons${match.logo_opponent}`}
-                      // src={match.logo_opponent}
                       alt={match.opponent}
                       className={styles.opponentAvatar}
                     >
@@ -87,9 +103,19 @@ export const TableMatches = ({ matches, count }: TableMatchesProps) => {
                 </TableCell>
 
                 <TableCell align="center">
-                  <IconButton onClick={handleClick} className={styles.ticketButton}>
-                    <ConfirmationNumberIcon />
-                  </IconButton>
+                  <Typography className={win ? styles.winScore : styles.lossScore}>
+                    {scoreText}
+                  </Typography>
+                </TableCell>
+
+                <TableCell align="center">
+                  <Typography className={styles.opponentName}>
+                    {match.status === 'finished'
+                      ? 'Завершен'
+                      : match.status === 'live'
+                        ? 'В прямом эфире'
+                        : 'Отменен'}
+                  </Typography>
                 </TableCell>
               </TableRow>
             );
@@ -97,6 +123,5 @@ export const TableMatches = ({ matches, count }: TableMatchesProps) => {
         </TableBody>
       </Table>
     </TableContainer>
-    // </div>
   );
 };

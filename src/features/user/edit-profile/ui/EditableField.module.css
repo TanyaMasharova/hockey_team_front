@@ -1,0 +1,19 @@
+.fieldWithEdit {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.fieldWrapper {
+  flex: 1;
+}
+
+.editIcon {
+  margin-top: 8px;
+  cursor: pointer;
+  min-width: 32px;
+}
+
+.editIcon:hover {
+  color: #1976d2;
+}

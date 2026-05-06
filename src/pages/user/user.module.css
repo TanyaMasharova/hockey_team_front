@@ -1,0 +1,76 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.formContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.avatarContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.avatar:hover {
+  opacity: 0.8;
+}
+
+.fieldWithEdit {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.fieldWrapper {
+  flex: 1;
+}
+
+.editIcon {
+  margin-top: 8px;
+  cursor: pointer;
+  min-width: 32px;
+}
+
+.editIcon:hover {
+  color: #1976d2;
+}
+
+.viewMode {
+  padding: 16px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  background-color: #fafafa;
+}
+
+.viewMode:hover {
+  border-color: #1976d2;
+  background-color: #f5f5f5;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .formContainer {
+    grid-template-columns: 1fr;
+  }
+}
