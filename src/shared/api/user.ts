@@ -9,6 +9,7 @@ export interface LoginRequest {
 export interface LoginResponse {
   access_token: string;
   token_type: string;
+  role: string;
 }
 
 export interface RegisterRequest {
@@ -50,6 +51,7 @@ export const getUserById = async (userId: string): Promise<User> => {
 export const login = async (email: string, password: string): Promise<LoginResponse> => {
   try {
     const response = await api.post('/login', { email, password });
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Login API error:', error);

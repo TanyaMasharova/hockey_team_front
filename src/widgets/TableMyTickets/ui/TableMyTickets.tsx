@@ -517,7 +517,7 @@ export const TableMyTickets = () => {
             variant="contained"
             color="primary"
             sx={{ mt: 3 }}
-            onClick={() => (window.location.href = '/matches')}
+            onClick={() => (window.location.href = '/schedule')}
           >
             Посмотреть матчи
           </Button>

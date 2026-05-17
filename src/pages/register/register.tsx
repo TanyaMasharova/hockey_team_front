@@ -46,24 +46,6 @@ export const RegisterPage = () => {
   const [success, setSuccess] = useState(false);
   const router = useRouter();
 
-  // Тестовые данные для быстрого заполнения
-  const testAccounts = [
-    {
-      fullName: 'Петров Иван Иванович',
-      email: 'user@example.com',
-      phone: '+7 (999) 123-45-67',
-      password: '12345',
-      label: 'Тестовый пользователь',
-    },
-    {
-      fullName: 'Админов Админ Админович',
-      email: 'admin@example.com',
-      phone: '+7 (999) 111-22-33',
-      password: 'admin123',
-      label: 'Администратор',
-    },
-  ];
-
   const formatPhoneNumber = (value: string) => {
     // Удаляем все нецифровые символы
     const cleaned = value.replace(/\D/g, '');
@@ -437,27 +419,6 @@ export const RegisterPage = () => {
           <Typography variant="h4" component="h1" gutterBottom align="center">
             Регистрация
           </Typography>
-
-          {/* Чипы для быстрого заполнения */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 1 }}>
-              Быстрое заполнение:
-            </Typography>
-            <Stack direction="row" spacing={1} justifyContent="center">
-              {testAccounts.map(account => (
-                <Chip
-                  key={account.email}
-                  icon={<Person />}
-                  label={account.label}
-                  onClick={() => handleQuickFill(account)}
-                  color="primary"
-                  variant="outlined"
-                  sx={{ cursor: 'pointer' }}
-                />
-              ))}
-            </Stack>
-            <Divider sx={{ mt: 2 }}>или заполните форму</Divider>
-          </Box>
 
           {/* Stepper */}
           <Stepper activeStep={activeStep} sx={{ mb: 4 }}>

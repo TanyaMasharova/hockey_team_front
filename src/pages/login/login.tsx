@@ -14,7 +14,15 @@ import {
   Stack,
   Divider,
 } from '@mui/material';
-import { Visibility, VisibilityOff, Email, Lock, Speed, Person } from '@mui/icons-material';
+import {
+  Visibility,
+  VisibilityOff,
+  Email,
+  Lock,
+  Speed,
+  Person,
+  AdminPanelSettings,
+} from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { login } from '@/shared/api/user';
 import styles from './login.module.css';
@@ -30,7 +38,7 @@ export const LoginPage = () => {
   const handleQuickLogin = (testEmail: string, testPassword: string) => {
     setEmail(testEmail);
     setPassword(testPassword);
-    setError(''); // Очищаем ошибку при выборе быстрого входа
+    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,12 +64,18 @@ export const LoginPage = () => {
         localStorage.setItem('token_type', data.token_type);
         localStorage.setItem('user', data.id);
         localStorage.setItem('user_id', data.id);
-        router.push('/user');
+        localStorage.setItem('user_role', data.role || 'user'); // ← сохраняем роль
+
+        // ← ПРОВЕРКА НА АДМИНА
+        if (data.role === 'admin') {
+          router.push('/admin/dashboard');
+        } else {
+          router.push('/user');
+        }
       }
     } catch (err: any) {
       console.error('Login error:', err);
 
-      // Проверяем статус из ответа ошибки
       const status = err.response?.status;
       const errorMessage = err.response?.data?.error;
 
@@ -83,6 +97,22 @@ export const LoginPage = () => {
     setShowPassword(!showPassword);
   };
 
+  // Быстрые входы для тестирования
+  const quickLogins = [
+    {
+      email: 'user@example.com',
+      password: 'user123',
+      label: 'Обычный пользователь',
+      icon: <Person />,
+    },
+    {
+      email: 'admin@example.com',
+      password: '12345',
+      label: 'Администратор',
+      icon: <AdminPanelSettings />,
+    },
+  ];
+
   return (
     <div className={styles.container}>
       <Container maxWidth="sm">
@@ -91,7 +121,6 @@ export const LoginPage = () => {
             Вход
           </Typography>
 
-          {/* Отображение ошибок */}
           {error && (
             <Alert
               severity="error"
