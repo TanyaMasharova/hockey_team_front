@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import {
   Event,
-  LocationOn,
   ConfirmationNumber,
   Home,
   FlightTakeoff,
@@ -22,12 +21,9 @@ import {
   Timeline,
   CalendarToday,
   Star,
-  SportsSoccer,
   DateRange,
 } from '@mui/icons-material';
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
   PieChart,
@@ -39,8 +35,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Area,
   ComposedChart,
+  Line,
 } from 'recharts';
 import { getUserTickets } from '@/shared/api/ticket';
 import { useError } from '@/shared/context/ErrorContext';
@@ -60,19 +56,27 @@ interface Ticket {
 }
 
 interface TicketStats {
-  total: number;
+  total: number; // Уникальные матчи
+  totalTickets?: number; // Всего билетов (опционально)
   home: number;
   away: number;
-  active: number;
+  active: number; // Активных билетов
   used: number;
   cancelled: number;
   totalSpent: number;
   averagePrice: number;
-  upcomingMatches: number;
+  upcomingMatches: number; // Уникальные предстоящие матчи
   lastMatchDate: string | null;
   firstMatchDate: string | null;
   favoriteOpponent: string;
   favoriteSector: string;
+}
+interface MonthlyData {
+  monthKey: string;
+  month: string;
+  matches: number;
+  tickets: number;
+  spent: number;
 }
 
 // Приглушённые, элегантные цвета
@@ -93,7 +97,7 @@ export const FanStats = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<TicketStats | null>(null);
-  const [monthlyData, setMonthlyData] = useState<any[]>([]);
+  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
   const [sectorData, setSectorData] = useState<any[]>([]);
   const [opponentData, setOpponentData] = useState<any[]>([]);
   const [weekdayData, setWeekdayData] = useState<any[]>([]);
@@ -142,29 +146,57 @@ export const FanStats = () => {
     const usedTickets = ticketsList.filter(t => t.status === 'used');
     const cancelledTickets = ticketsList.filter(t => t.status === 'cancelled');
 
-    const homeMatches = ticketsList.filter(t => normalizeHomeAway(t.home_away) === 'home');
-    const awayMatches = ticketsList.filter(t => normalizeHomeAway(t.home_away) === 'away');
+    // Уникальные матчи (по датам, исключая отменённые)
+    const validTickets = ticketsList.filter(t => t.status !== 'cancelled');
 
-    const validTickets = ticketsList.filter(t => t.status === 'active' || t.status === 'used');
-    const totalSpent = validTickets.reduce((sum, t) => sum + (t.final_price || 0), 0);
-    const averagePrice = validTickets.length > 0 ? totalSpent / validTickets.length : 0;
+    // Создаём Map для уникальных матчей с информацией о наличии активных билетов
+    const uniqueMatchesMap = new Map<string, { ticket: Ticket; hasActive: boolean }>();
 
-    const validMatchDates = ticketsList
-      .filter(t => t.match_date && !isNaN(new Date(t.match_date).getTime()))
-      .map(t => new Date(t.match_date))
-      .sort((a, b) => a.getTime() - b.getTime());
+    validTickets.forEach(ticket => {
+      const dateKey = new Date(ticket.match_date).toISOString().split('T')[0];
+      const isActive = ticket.status === 'active';
 
+      if (!uniqueMatchesMap.has(dateKey)) {
+        uniqueMatchesMap.set(dateKey, {
+          ticket: ticket,
+          hasActive: isActive,
+        });
+      } else {
+        // Если уже есть матч, обновляем hasActive (если хоть один билет активен)
+        const existing = uniqueMatchesMap.get(dateKey)!;
+        if (isActive) {
+          existing.hasActive = true;
+        }
+      }
+    });
+
+    const uniqueMatches = Array.from(uniqueMatchesMap.values()).map(item => item.ticket);
     const now = new Date();
     now.setHours(0, 0, 0, 0);
 
-    const upcomingMatches = activeTickets.filter(t => {
-      const matchDate = new Date(t.match_date);
+    // Предстоящие матчи (уникальные, где есть хотя бы один активный билет И дата в будущем)
+    const upcomingMatchesCount = Array.from(uniqueMatchesMap.values()).filter(item => {
+      const matchDate = new Date(item.ticket.match_date);
       matchDate.setHours(0, 0, 0, 0);
-      return matchDate >= now;
+      return matchDate >= now && item.hasActive;
     }).length;
 
+    // Дома/выезд по уникальным матчам
+    const homeMatches = uniqueMatches.filter(t => normalizeHomeAway(t.home_away) === 'home');
+    const awayMatches = uniqueMatches.filter(t => normalizeHomeAway(t.home_away) === 'away');
+
+    // Финансы по всем валидным билетам
+    const totalSpent = validTickets.reduce((sum, t) => sum + (t.final_price || 0), 0);
+    const averagePrice = validTickets.length > 0 ? totalSpent / validTickets.length : 0;
+
+    // Даты уникальных матчей
+    const matchDates = uniqueMatches
+      .map(t => new Date(t.match_date))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    // Любимый соперник (по билетам)
     const opponentCount = new Map<string, number>();
-    ticketsList.forEach(t => {
+    validTickets.forEach(t => {
       const opponent = t.opponent_name?.trim() || 'Неизвестный соперник';
       opponentCount.set(opponent, (opponentCount.get(opponent) || 0) + 1);
     });
@@ -178,8 +210,9 @@ export const FanStats = () => {
       }
     });
 
+    // Любимый сектор
     const sectorCount = new Map<string, number>();
-    ticketsList.forEach(t => {
+    validTickets.forEach(t => {
       const sector = t.sector_number?.trim() || 'Неизвестный';
       sectorCount.set(sector, (sectorCount.get(sector) || 0) + 1);
     });
@@ -194,7 +227,8 @@ export const FanStats = () => {
     });
 
     setStats({
-      total: ticketsList.length,
+      total: uniqueMatches.length,
+      totalTickets: validTickets.length,
       home: homeMatches.length,
       away: awayMatches.length,
       active: activeTickets.length,
@@ -202,12 +236,10 @@ export const FanStats = () => {
       cancelled: cancelledTickets.length,
       totalSpent,
       averagePrice,
-      upcomingMatches,
+      upcomingMatches: upcomingMatchesCount,
       lastMatchDate:
-        validMatchDates.length > 0
-          ? validMatchDates[validMatchDates.length - 1]?.toISOString()
-          : null,
-      firstMatchDate: validMatchDates.length > 0 ? validMatchDates[0]?.toISOString() : null,
+        matchDates.length > 0 ? matchDates[matchDates.length - 1]?.toISOString() : null,
+      firstMatchDate: matchDates.length > 0 ? matchDates[0]?.toISOString() : null,
       favoriteOpponent: favoriteOpponent || '—',
       favoriteSector: favoriteSector || '—',
     });
@@ -216,29 +248,23 @@ export const FanStats = () => {
   const calculateCharts = (ticketsList: Ticket[]) => {
     if (!ticketsList.length) return;
 
-    // 1. Динамика по месяцам (считаем УНИКАЛЬНЫЕ матчи, а не билеты)
-    const monthlyMap = new Map();
-
-    // Создаём Set для отслеживания уникальных матчей по месяцам
-    const uniqueMatchesPerMonth = new Map(); // key: monthKey, value: Set of match dates
+    // 1. Динамика по месяцам
+    const monthlyMap = new Map<string, MonthlyData>();
+    const uniqueMatchesPerMonth = new Map<string, Set<string>>();
 
     ticketsList.forEach(ticket => {
       if (ticket.status === 'cancelled') return;
 
       const date = new Date(ticket.match_date);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      const matchDateKey = date.toISOString().split('T')[0]; // Уникальный идентификатор матча по дате
+      const matchDateKey = date.toISOString().split('T')[0];
 
-      // Инициализируем Set для месяца, если его нет
       if (!uniqueMatchesPerMonth.has(monthKey)) {
         uniqueMatchesPerMonth.set(monthKey, new Set());
       }
-
-      // Добавляем матч в Set (дубликаты не добавятся)
-      uniqueMatchesPerMonth.get(monthKey).add(matchDateKey);
+      uniqueMatchesPerMonth.get(monthKey)!.add(matchDateKey);
     });
 
-    // Теперь проходим по каждому месяцу и считаем уникальные матчи и сумму трат
     ticketsList.forEach(ticket => {
       if (ticket.status === 'cancelled') return;
 
@@ -250,18 +276,17 @@ export const FanStats = () => {
         monthlyMap.set(monthKey, {
           monthKey,
           month: monthName,
-          matches: uniqueMatchesPerMonth.get(monthKey)?.size || 0, // Количество УНИКАЛЬНЫХ матчей
-          tickets: 0, // Количество билетов (для дополнительной информации)
+          matches: uniqueMatchesPerMonth.get(monthKey)?.size || 0,
+          tickets: 0,
           spent: 0,
         });
       }
 
-      const stats = monthlyMap.get(monthKey);
-      stats.tickets += 1; // Считаем билеты отдельно
+      const stats = monthlyMap.get(monthKey)!;
+      stats.tickets += 1;
       stats.spent += ticket.final_price;
     });
 
-    // Сортировка по дате
     const monthly = Array.from(monthlyMap.values())
       .sort((a, b) => a.monthKey.localeCompare(b.monthKey))
       .slice(-12);
@@ -269,7 +294,7 @@ export const FanStats = () => {
     setMonthlyData(monthly);
 
     // 2. Распределение по секторам (топ-5)
-    const sectorMap = new Map();
+    const sectorMap = new Map<string, number>();
     ticketsList.forEach(ticket => {
       const sector = ticket.sector_number;
       sectorMap.set(sector, (sectorMap.get(sector) || 0) + 1);
@@ -282,7 +307,7 @@ export const FanStats = () => {
     setSectorData(sectors);
 
     // 3. Топ-5 соперников
-    const opponentMap = new Map();
+    const opponentMap = new Map<string, number>();
     ticketsList.forEach(ticket => {
       const opponent = ticket.opponent_name;
       opponentMap.set(opponent, (opponentMap.get(opponent) || 0) + 1);
@@ -299,25 +324,24 @@ export const FanStats = () => {
 
     // 4. Распределение по дням недели
     const weekdayMap = new Map([
-      [1, { name: 'Пн', count: 0 }], // Понедельник = 1
+      [1, { name: 'Пн', count: 0 }],
       [2, { name: 'Вт', count: 0 }],
       [3, { name: 'Ср', count: 0 }],
       [4, { name: 'Чт', count: 0 }],
       [5, { name: 'Пт', count: 0 }],
       [6, { name: 'Сб', count: 0 }],
-      [0, { name: 'Вс', count: 0 }], // Воскресенье = 0
+      [0, { name: 'Вс', count: 0 }],
     ]);
 
     ticketsList.forEach(ticket => {
       const date = new Date(ticket.match_date);
-      const weekday = date.getDay(); // 0-6
+      const weekday = date.getDay();
       const existing = weekdayMap.get(weekday);
       if (existing) {
         existing.count += 1;
       }
     });
 
-    // Сортируем дни недели в правильном порядке (Пн, Вт, Ср, Чт, Пт, Сб, Вс)
     const weekdays = Array.from(weekdayMap.values());
     const weekdayOrder = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     weekdays.sort((a, b) => weekdayOrder.indexOf(a.name) - weekdayOrder.indexOf(b.name));
@@ -540,7 +564,7 @@ export const FanStats = () => {
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                       }}
                       formatter={(value: any, name: string, props: any) => {
-                        if (props.dataKey === 'spent') {
+                        if (props && props.dataKey === 'spent') {
                           return [formatPrice(value), 'Траты'];
                         }
                         return [value, 'Матчей'];
@@ -570,7 +594,7 @@ export const FanStats = () => {
           </Grid>
         )}
 
-        {/* Сектора и соперники */}
+        {/* Сектора */}
         <Grid item xs={12} md={6}>
           <Typography variant="h6" className={styles.chartTitle}>
             Любимые сектора
@@ -610,37 +634,7 @@ export const FanStats = () => {
           </Card>
         </Grid>
 
-        {/* <Grid item xs={12} md={6}>
-          <Typography variant="h6" className={styles.chartTitle}>
-            Топ соперников
-          </Typography>
-          <Card className={styles.chartCard}>
-            <CardContent>
-              {opponentData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300} minWidth={400}>
-                  <BarChart data={opponentData} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E0E0E0" />
-                    <XAxis type="number" tick={{ fill: '#5B6E7E', fontSize: 12 }} />
-                    <YAxis
-                      type="category"
-                      dataKey="name"
-                      tick={{ fill: '#5B6E7E', fontSize: 12 }}
-                      width={100}
-                    />
-                    <Tooltip formatter={(value: any) => [`${value} раз`, 'Матчей']} />
-                    <Bar dataKey="count" fill={CHART_COLORS.secondary} radius={[0, 4, 4, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <Typography variant="body2" color="textSecondary" align="center" py={4}>
-                  Нет данных о соперниках
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid> */}
-
-        {/* Дома vs В гостях и дни недели */}
+        {/* Дома vs В гостях */}
         <Grid item xs={12} md={6}>
           <Typography variant="h6" className={styles.chartTitle}>
             Дома vs В гостях
@@ -690,7 +684,8 @@ export const FanStats = () => {
           </Card>
         </Grid>
 
-        {/* <Grid item xs={12} md={6}>
+        {/* Дни недели */}
+        <Grid item xs={12} md={6}>
           <Typography variant="h6" className={styles.chartTitle}>
             Дни недели
           </Typography>
@@ -716,7 +711,7 @@ export const FanStats = () => {
               </Typography>
             </CardContent>
           </Card>
-        </Grid> */}
+        </Grid>
 
         {/* Статус билетов */}
         {statusData.length > 1 && (
@@ -726,7 +721,7 @@ export const FanStats = () => {
             </Typography>
             <Card className={styles.chartCard}>
               <CardContent>
-                <ResponsiveContainer width="100%" height={280} minWidth={800}>
+                <ResponsiveContainer width="100%" height={280} minWidth={500}>
                   <BarChart data={statusData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E0E0E0" />
                     <XAxis dataKey="name" tick={{ fill: '#5B6E7E', fontSize: 12 }} />
@@ -779,7 +774,7 @@ export const FanStats = () => {
                     </Typography>
                     <Typography variant="body1" fontWeight={500}>
                       {stats.upcomingMatches > 0
-                        ? `${stats.upcomingMatches} матча впереди`
+                        ? `${stats.upcomingMatches} матч(а) впереди`
                         : 'Нет ближайших матчей'}
                     </Typography>
                   </Box>
