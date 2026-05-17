@@ -1,25 +1,44 @@
+// shared/api/ticket.ts
 import { api } from '@/shared/config/axiosConfig';
 
-export interface TicketResponse {
-  id: string;
-  match_date: string;
-  opponent_name: string;
-  home_away: string;
-  sector_number: string;
-  seat_row: string;
-  seat_number: string;
-  purchase_date: string;
-  final_price: number;
-  status: string;
-}
-
-export interface UserTicketsResponse {
+export interface CreateTicketData {
   user_id: string;
-  tickets: TicketResponse[];
-  total: number;
+  match_id: string;
+  seat_id: string;
+  final_price: number;
+  // full_name: string;
+  // phone: string;
+  // email: string;
 }
 
-export const getUserTickets = async (userId: string): Promise<UserTicketsResponse> => {
+export interface Ticket {
+  id: string;
+  user_id: string;
+  match_id: string;
+  seat_id: string;
+  final_price: number;
+  purchase_date: string;
+  qr_code_hash: string;
+  status: 'active' | 'used' | 'refunded' | 'cancelled';
+}
+
+// Создание билета через axios
+// shared/api/ticket.ts
+export const createTicket = async (data: CreateTicketData): Promise<Ticket> => {
+  try {
+    const response = await api.post('/tickets', data);
+    return response.data;
+  } catch (error: any) {
+    // Подробно логируем ошибку
+
+    throw new Error(
+      error.response?.data?.error || error.response?.data?.message || 'Failed to create ticket'
+    );
+  }
+};
+
+// Остальные функции...
+export const getUserTickets = async (userId: string) => {
   try {
     const response = await api.get(`/tickets/user/${userId}`);
     return response.data;
@@ -29,11 +48,12 @@ export const getUserTickets = async (userId: string): Promise<UserTicketsRespons
   }
 };
 
-export const createTicket = async (data: any) => {
-  const response = await fetch('/api/tickets', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  return response.json();
+export const cancelTicket = async (ticketId: string) => {
+  try {
+    const response = await api.patch(`/tickets/${ticketId}`, { status: 'cancelled' });
+    return response.data;
+  } catch (error) {
+    console.error('Error cancelling ticket:', error);
+    throw error;
+  }
 };

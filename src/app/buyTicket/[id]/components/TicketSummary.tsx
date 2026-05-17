@@ -7,21 +7,14 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
-import {
-  ConfirmationNumber,
-  Person,
-  Phone,
-  Email,
-  LocationOn,
-  CalendarToday,
-} from '@mui/icons-material';
+import { ConfirmationNumber, Email, LocationOn, CalendarToday } from '@mui/icons-material';
 
 interface TicketSummaryProps {
   match: any;
   sector: any;
   seat: any;
   price: number;
-  userData: { full_name: string; phone: string; email: string };
+  userData: { email: string };
   onConfirm: () => void;
   onBack: () => void;
   loading: boolean;
@@ -98,29 +91,9 @@ export default function TicketSummary({
       <Card sx={{ mb: 3, borderRadius: 3 }}>
         <CardContent>
           <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-            Данные покупателя
+            Куда отправить билет
           </Typography>
           <Divider sx={{ mb: 2 }} />
-
-          <Box display="flex" alignItems="center" gap={2} mb={2}>
-            <Person color="action" />
-            <Box>
-              <Typography variant="body2" color="textSecondary">
-                ФИО
-              </Typography>
-              <Typography fontWeight={500}>{userData.full_name}</Typography>
-            </Box>
-          </Box>
-
-          <Box display="flex" alignItems="center" gap={2} mb={2}>
-            <Phone color="action" />
-            <Box>
-              <Typography variant="body2" color="textSecondary">
-                Телефон
-              </Typography>
-              <Typography fontWeight={500}>{userData.phone}</Typography>
-            </Box>
-          </Box>
 
           <Box display="flex" alignItems="center" gap={2}>
             <Email color="action" />

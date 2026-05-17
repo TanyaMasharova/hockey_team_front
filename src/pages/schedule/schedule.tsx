@@ -80,6 +80,7 @@ export const SchedulePage = () => {
                 <FutureMatchesChart matches={matches} />
               </>
             )}
+
             <TableMatches matches={matches} />
           </>
         ) : (
@@ -89,9 +90,8 @@ export const SchedulePage = () => {
                 <MatchStatsChart stats={stats} />
               </div>
             )}
+            {console.log(lastMatches)}
             <TableLastMatches matches={lastMatches} />
-            {/*вот тут нужна круговая диаграмма выигранных и проигранных матсей. так же  */}
-            {console.log(stats)}
           </>
         )}
       </div>

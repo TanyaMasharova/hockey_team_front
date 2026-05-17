@@ -1,52 +1,104 @@
 import { api } from '@/shared/config/axiosConfig';
 
-export const getFutureMatches = async (limit?: number) => {
+export interface Match {
+  id: string;
+  opponent_name: string;
+  match_date: string;
+  home_away: string;
+  our_score: number;
+  opponent_score: number;
+  status: string;
+  is_derby: boolean;
+}
+
+export interface Sector {
+  id: string;
+  sector_number: string;
+  capacity: number;
+  sector_type: string;
+  price_coefficient: number;
+  color_code: string;
+}
+
+export interface Seat {
+  ID: string; // с большой буквы
+  SeatRow: string; // с большой буквы
+  SeatNumber: string; // с большой буквы
+  IsHandicapAccessible: boolean; // с большой буквы
+  IsTaken: boolean; // с большой буквы
+}
+
+// Получение будущих матчей
+export const getFutureMatches = async (limit?: number): Promise<Match[]> => {
   try {
-    const response = await api.get(`/matches`, {
+    const response = await api.get('/matches', {
       params: { limit, futurePast: 'future' },
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetchinf matches', error);
+    console.error('Error fetching future matches', error);
     throw error;
   }
 };
 
-export const getLastMatches = async (limit?: number) => {
+// Получение прошедших матчей
+export const getLastMatches = async (limit?: number): Promise<Match[]> => {
   try {
-    const response = await api.get(`/matches`, {
+    const response = await api.get('/matches', {
       params: { limit, futurePast: 'past' },
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetchinf matches', error);
+    console.error('Error fetching past matches', error);
     throw error;
   }
 };
 
+// Получение статистики матчей
 export const getMatchesStats = async () => {
   try {
-    const response = await api.get(`/matchesStats`);
+    const response = await api.get('/matchesStats');
     return response.data;
   } catch (error) {
-    console.error('Error fetchinf matches stats', error);
+    console.error('Error fetching matches stats', error);
     throw error;
   }
 };
 
+// Получение матча по ID (через axios)
+export const getMatchById = async (id: string): Promise<Match> => {
+  try {
+    const response = await api.get(`/matches/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching match by id:', error);
+    throw error;
+  }
+};
+
+// Получение всех секторов стадиона
+export const getStadiumSectors = async (): Promise<Sector[]> => {
+  try {
+    const response = await api.get('/stadium/sectors');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching stadium sectors:', error);
+    throw error;
+  }
+};
+
+// Получение мест по сектору
 // shared/api/matches.ts
-export const getMatchById = async (id: string) => {
-  const response = await fetch(`/api/matches/${id}`);
-  return response.json();
-};
-
-// shared/api/stadium.ts
-export const getStadiumSectors = async () => {
-  const response = await fetch('/api/stadium/sectors');
-  return response.json();
-};
-
-export const getSeatsBySector = async (sectorId: string) => {
-  const response = await fetch(`/api/stadium/sectors/${sectorId}/seats`);
-  return response.json();
+export const getSeatsBySector = async (sectorId: string, matchId: string): Promise<Seat[]> => {
+  try {
+    console.log('Calling API with:', { sectorId, matchId });
+    const response = await api.get(`/stadium/sectors/${sectorId}/seats`, {
+      params: { matchId },
+    });
+    console.log('API response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching seats by sector:', error);
+    throw error;
+  }
 };

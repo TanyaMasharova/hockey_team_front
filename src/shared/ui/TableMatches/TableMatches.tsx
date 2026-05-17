@@ -1,3 +1,4 @@
+'use client';
 import styles from './TableMatches.module.css';
 import { MatchFuture } from '@/entities/Match';
 import {
@@ -14,6 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import { useRouter } from 'next/navigation';
 
 interface TableMatchesProps {
   matches: MatchFuture[];
@@ -21,8 +23,10 @@ interface TableMatchesProps {
 }
 
 export const TableMatches = ({ matches, count }: TableMatchesProps) => {
-  const handleClick = () => {
-    console.log('Реализовать переход по ссылке на покупку билета');
+  const router = useRouter();
+
+  const handleBuyTicket = (matchId: string) => {
+    router.push(`/buyTicket/${matchId}`);
   };
 
   const formatMatchDate = (dateString: string) => {
@@ -42,7 +46,6 @@ export const TableMatches = ({ matches, count }: TableMatchesProps) => {
   };
 
   return (
-    // <div className={styles.mainContainer}>
     <TableContainer component={Paper} className={styles.tableContainer}>
       <Table aria-label="matches table">
         <TableHead>
@@ -76,7 +79,6 @@ export const TableMatches = ({ matches, count }: TableMatchesProps) => {
                   <Box className={styles.opponentBox}>
                     <Avatar
                       src={`/icons${match.logo_opponent}`}
-                      // src={match.logo_opponent}
                       alt={match.opponent}
                       className={styles.opponentAvatar}
                     >
@@ -87,7 +89,11 @@ export const TableMatches = ({ matches, count }: TableMatchesProps) => {
                 </TableCell>
 
                 <TableCell align="center">
-                  <IconButton onClick={handleClick} className={styles.ticketButton}>
+                  <IconButton
+                    onClick={() => handleBuyTicket(match.id)}
+                    className={styles.ticketButton}
+                    title="Купить билет"
+                  >
                     <ConfirmationNumberIcon />
                   </IconButton>
                 </TableCell>
@@ -97,6 +103,5 @@ export const TableMatches = ({ matches, count }: TableMatchesProps) => {
         </TableBody>
       </Table>
     </TableContainer>
-    // </div>
   );
 };

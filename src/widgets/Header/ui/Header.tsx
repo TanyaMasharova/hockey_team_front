@@ -8,7 +8,7 @@ interface LinkHeader {
 }
 
 const links: LinkHeader[] = [
-  { name: 'Купить билет', href: '/buyTicket' },
+  // { name: 'Купить билет', href: '/buyTicket' },
   {
     name: 'Расписание игр',
     href: '/schedule',

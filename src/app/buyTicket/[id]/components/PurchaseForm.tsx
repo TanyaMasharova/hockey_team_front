@@ -1,54 +1,44 @@
+'use client';
 import { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, Alert } from '@mui/material';
+import { Box, TextField, Button, Typography, Alert, Grid } from '@mui/material';
+import { ArrowBack } from '@mui/icons-material';
+import { getUserById } from '@/shared/api/user';
 
 interface PurchaseFormProps {
   initialData: {
-    full_name: string;
-    phone: string;
     email: string;
   };
-  onSubmit: (data: any) => void;
+  onSubmit: (data: { email: string }) => void;
+  onBack: () => void;
 }
 
-export default function PurchaseForm({ initialData, onSubmit }: PurchaseFormProps) {
+export default function PurchaseForm({ initialData, onSubmit, onBack }: PurchaseFormProps) {
   const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Загружаем данные пользователя если он авторизован
     const loadUserData = async () => {
       const userId = localStorage.getItem('user');
-      if (userId) {
+      if (userId && !initialData.email) {
+        setLoading(true);
         try {
-          const response = await fetch(`/api/users/${userId}`);
-          const user = await response.json();
+          const user = await getUserById(userId);
           setFormData({
-            full_name: user.full_name || '',
-            phone: user.phone || '',
             email: user.email || '',
           });
         } catch (error) {
           console.error('Failed to load user data:', error);
+        } finally {
+          setLoading(false);
         }
       }
     };
     loadUserData();
-  }, []);
+  }, [initialData.email]);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-
-    if (!formData.full_name.trim()) {
-      newErrors.full_name = 'Введите ФИО';
-    } else if (formData.full_name.trim().length < 3) {
-      newErrors.full_name = 'ФИО должно содержать минимум 3 символа';
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Введите номер телефона';
-    } else if (!/^(\+7|8)?\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Введите корректный номер телефона';
-    }
 
     if (!formData.email.trim()) {
       newErrors.email = 'Введите Email';
@@ -70,34 +60,11 @@ export default function PurchaseForm({ initialData, onSubmit }: PurchaseFormProp
   return (
     <Box component="form" onSubmit={handleSubmit}>
       <Typography variant="h6" gutterBottom fontWeight={600}>
-        Ваши данные
+        Контактные данные
       </Typography>
       <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
         Билет будет отправлен на указанный email
       </Typography>
-
-      <TextField
-        fullWidth
-        label="ФИО"
-        value={formData.full_name}
-        onChange={e => setFormData({ ...formData, full_name: e.target.value })}
-        error={!!errors.full_name}
-        helperText={errors.full_name}
-        required
-        sx={{ mb: 2 }}
-      />
-
-      <TextField
-        fullWidth
-        label="Телефон"
-        placeholder="+7 (999) 999-99-99"
-        value={formData.phone}
-        onChange={e => setFormData({ ...formData, phone: e.target.value })}
-        error={!!errors.phone}
-        helperText={errors.phone}
-        required
-        sx={{ mb: 2 }}
-      />
 
       <TextField
         fullWidth
@@ -108,6 +75,7 @@ export default function PurchaseForm({ initialData, onSubmit }: PurchaseFormProp
         error={!!errors.email}
         helperText={errors.email}
         required
+        disabled={loading}
         sx={{ mb: 3 }}
       />
 
@@ -115,9 +83,18 @@ export default function PurchaseForm({ initialData, onSubmit }: PurchaseFormProp
         После оплаты билет будет доступен в личном кабинете и придёт на указанную почту
       </Alert>
 
-      <Button type="submit" variant="contained" fullWidth size="large">
-        Продолжить
-      </Button>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={4}>
+          <Button variant="outlined" onClick={onBack} fullWidth disabled={loading}>
+            Назад
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={8}>
+          <Button type="submit" variant="contained" fullWidth size="large" disabled={loading}>
+            {loading ? 'Загрузка...' : 'Продолжить'}
+          </Button>
+        </Grid>
+      </Grid>
     </Box>
   );
 }

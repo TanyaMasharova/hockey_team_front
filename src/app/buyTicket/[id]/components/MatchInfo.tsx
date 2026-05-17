@@ -3,7 +3,7 @@ import { CalendarToday, LocationOn, SportsSoccer, Star } from '@mui/icons-materi
 
 interface MatchInfoProps {
   match: {
-    opponent_name: string;
+    opponent: string;
     match_date: string;
     home_away: string;
     our_score: number;
@@ -39,7 +39,8 @@ export default function MatchInfo({ match }: MatchInfoProps) {
             Соперник
           </Typography>
           <Typography variant="h5" fontWeight={600}>
-            {match.opponent_name}
+            {/* {console.log(match.opponent)} */}
+            {match.opponent}
           </Typography>
           {match.is_derby && (
             <Chip icon={<Star />} label="Дерби!" size="small" color="error" sx={{ mt: 1 }} />

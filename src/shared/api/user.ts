@@ -1,5 +1,6 @@
 import { api } from '../config/axiosConfig';
 import { UserData } from '@/entities/User';
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -25,10 +26,19 @@ export interface RegisterResponse {
   created_at: string;
 }
 
-export const getUserById = async (userId: string) => {
+export interface User {
+  id: string;
+  phone: string;
+  email: string;
+  full_name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Получение пользователя по ID
+export const getUserById = async (userId: string): Promise<User> => {
   try {
     const response = await api.get(`/user/${userId}`);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(`Error fetching user with id ${userId}`, error);
@@ -36,17 +46,19 @@ export const getUserById = async (userId: string) => {
   }
 };
 
-// shared/api/user.ts
-export const login = async (email: string, password: string) => {
+// Логин
+export const login = async (email: string, password: string): Promise<LoginResponse> => {
   try {
     const response = await api.post('/login', { email, password });
     return response.data;
   } catch (error) {
     console.error('Login API error:', error);
-    throw error; // Важно: пробрасываем ошибку дальше
+    throw error;
   }
 };
-export const register = async (data: RegisterRequest) => {
+
+// Регистрация
+export const register = async (data: RegisterRequest): Promise<RegisterResponse> => {
   try {
     const response = await api.post('/register', data);
     return response.data;
@@ -56,6 +68,7 @@ export const register = async (data: RegisterRequest) => {
   }
 };
 
+// Обновление поля пользователя
 export const updateUserField = async (userId: string, field: string, value: string) => {
   try {
     const response = await api.patch(`/user/${userId}/profile/field`, {
