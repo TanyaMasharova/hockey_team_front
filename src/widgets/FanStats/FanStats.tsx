@@ -211,6 +211,7 @@ export const FanStats = () => {
     });
 
     // Любимый сектор
+    // Любимый сектор - по количеству билетов (посещений)
     const sectorCount = new Map<string, number>();
     validTickets.forEach(t => {
       const sector = t.sector_number?.trim() || 'Неизвестный';
@@ -248,13 +249,14 @@ export const FanStats = () => {
   const calculateCharts = (ticketsList: Ticket[]) => {
     if (!ticketsList.length) return;
 
+    // Исключаем отменённые билеты
+    const validTickets = ticketsList.filter(t => t.status !== 'cancelled');
+
     // 1. Динамика по месяцам
     const monthlyMap = new Map<string, MonthlyData>();
     const uniqueMatchesPerMonth = new Map<string, Set<string>>();
 
-    ticketsList.forEach(ticket => {
-      if (ticket.status === 'cancelled') return;
-
+    validTickets.forEach(ticket => {
       const date = new Date(ticket.match_date);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       const matchDateKey = date.toISOString().split('T')[0];
@@ -265,9 +267,7 @@ export const FanStats = () => {
       uniqueMatchesPerMonth.get(monthKey)!.add(matchDateKey);
     });
 
-    ticketsList.forEach(ticket => {
-      if (ticket.status === 'cancelled') return;
-
+    validTickets.forEach(ticket => {
       const date = new Date(ticket.match_date);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       const monthName = date.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' });
@@ -293,9 +293,9 @@ export const FanStats = () => {
 
     setMonthlyData(monthly);
 
-    // 2. Распределение по секторам (топ-5)
+    // 2. Распределение по секторам (топ-5) - ТОЛЬКО валидные билеты
     const sectorMap = new Map<string, number>();
-    ticketsList.forEach(ticket => {
+    validTickets.forEach(ticket => {
       const sector = ticket.sector_number;
       sectorMap.set(sector, (sectorMap.get(sector) || 0) + 1);
     });
@@ -306,9 +306,9 @@ export const FanStats = () => {
       .slice(0, 5);
     setSectorData(sectors);
 
-    // 3. Топ-5 соперников
+    // 3. Топ-5 соперников - ТОЛЬКО валидные билеты
     const opponentMap = new Map<string, number>();
-    ticketsList.forEach(ticket => {
+    validTickets.forEach(ticket => {
       const opponent = ticket.opponent_name;
       opponentMap.set(opponent, (opponentMap.get(opponent) || 0) + 1);
     });
@@ -322,7 +322,7 @@ export const FanStats = () => {
       .slice(0, 5);
     setOpponentData(opponents);
 
-    // 4. Распределение по дням недели
+    // 4. Распределение по дням недели - ТОЛЬКО валидные билеты
     const weekdayMap = new Map([
       [1, { name: 'Пн', count: 0 }],
       [2, { name: 'Вт', count: 0 }],
@@ -333,7 +333,7 @@ export const FanStats = () => {
       [0, { name: 'Вс', count: 0 }],
     ]);
 
-    ticketsList.forEach(ticket => {
+    validTickets.forEach(ticket => {
       const date = new Date(ticket.match_date);
       const weekday = date.getDay();
       const existing = weekdayMap.get(weekday);
@@ -413,7 +413,7 @@ export const FanStats = () => {
     { name: 'Активные', value: stats.active, color: CHART_COLORS.success },
     { name: 'Использованные', value: stats.used, color: CHART_COLORS.primary },
     ...(stats.cancelled > 0
-      ? [{ name: 'Отменённые', value: stats.cancelled, color: CHART_COLORS.error }]
+      ? [{ name: 'Отменённые матчи', value: stats.cancelled, color: CHART_COLORS.error }]
       : []),
   ].filter(item => item.value > 0);
 
@@ -497,9 +497,9 @@ export const FanStats = () => {
               <Divider sx={{ my: 1 }} />
               <Box className={styles.statusStats}>
                 <Chip label={`Использовано: ${stats.used}`} size="small" />
-                {stats.cancelled > 0 && (
+                {/* {stats.cancelled > 0 && (
                   <Chip label={`Отменено: ${stats.cancelled}`} size="small" />
-                )}
+                )} */}
               </Box>
               {stats.upcomingMatches > 0 && (
                 <Typography
