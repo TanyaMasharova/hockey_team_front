@@ -25,7 +25,7 @@ export const Header = () => {
       <div className={styles.linksContainer}>
         {links.map((link, index) => (
           <Link href={link.href} key={index}>
-            <p>{link.name}</p>
+            <p style={{ color: 'white' }}>{link.name}</p>
           </Link>
         ))}
         <Link href="/user">

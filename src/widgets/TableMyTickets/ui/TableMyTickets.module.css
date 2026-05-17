@@ -1,0 +1,228 @@
+.container {
+  padding-block: clamp(20px, 2vw, 40px);
+  padding-inline: clamp(100px, 8vw, 160px);
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.title {
+  margin-bottom: 24px !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #1a1a1a;
+  justify-content: center;
+}
+
+.counter {
+  margin-left: 12px;
+}
+
+.tableContainer {
+  border-radius: 16px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  overflow-x: auto;
+  background-color: #ffffff;
+}
+
+/* Стили для заголовков таблицы */
+.tableContainer :global(.MuiTableCell-head) {
+  background-color: #f8f9fa;
+  color: #2c3e50;
+  font-weight: 600;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+/* Стили для ячеек таблицы */
+.tableContainer :global(.MuiTableCell-body) {
+  color: #2c3e50;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.headerCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #2c3e50;
+}
+
+.tableRow:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+  transition: background-color 0.2s ease;
+}
+
+/* Убираем эффект подсветки при наведении, чтобы текст не менялся */
+.tableRow:hover :global(.MuiTableCell-body) {
+  color: #2c3e50;
+}
+
+.seatInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.seatInfo svg {
+  color: #7f8c8d;
+}
+
+.seatInfo span {
+  color: #2c3e50;
+}
+
+.homeChip {
+  background-color: #e3f2fd !important;
+  color: #1976d2 !important;
+  font-size: 11px !important;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.awayChip {
+  background-color: #ddffe7 !important;
+  color: #0a5832 !important;
+  font-size: 11px !important;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: #f5f5f5;
+}
+
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  background: #f5f5f5;
+}
+
+.emptyContainer svg {
+  color: #bdc3c7;
+}
+
+.emptyContainer h6 {
+  color: #7f8c8d;
+}
+
+.emptyContainer p {
+  color: #95a5a6;
+}
+
+/* Добавьте в конец файла TableMyTickets.module.css */
+
+.statsContainer {
+  margin-bottom: 32px;
+}
+
+.statsTitle {
+  margin-bottom: 20px !important;
+  color: #1a1a1a;
+  font-size: 1.5rem !important;
+}
+
+.statCard {
+  height: 100%;
+  border-radius: 16px !important;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  cursor: default;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.statCardWide {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #1a1a1a !important;
+}
+
+.statCardWide .extraStat {
+  color: #1a1a1a !important;
+}
+
+.statCardWide .extraStat svg {
+  color: #4a4a4a !important;
+}
+
+.statCardWide .MuiTypography-body1 {
+  color: #1a1a1a !important;
+}
+
+.statCardWide .MuiTypography-body2 {
+  color: #555555 !important;
+}
+
+.statIcon {
+  margin-bottom: 12px;
+}
+
+.statValue {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.statDetails {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.homeStatChip {
+  background-color: #e3f2fd !important;
+  color: #1976d2 !important;
+}
+
+.awayStatChip {
+  background-color: #f3e5f5 !important;
+  color: #9c27b0 !important;
+}
+
+.statusStats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.extraStat {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .statsContainer {
+    margin-bottom: 20px;
+  }
+
+  .statsTitle {
+    font-size: 1.25rem !important;
+  }
+
+  .statValue {
+    font-size: 1.75rem !important;
+  }
+}
+@media (max-width: 900px) {
+  .container {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+}

@@ -1,0 +1,155 @@
+.container {
+  background: #f5f7f9;
+  min-height: 100vh;
+  border-radius: 24px;
+  padding: 20px;
+  max-width: 1600px;
+}
+
+.title {
+  margin-bottom: 32px !important;
+  color: #2c3e4e;
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  text-align: center;
+}
+
+.chartTitle {
+  margin-bottom: 16px !important;
+  margin-top: 8px !important;
+  color: #2c3e4e;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+}
+
+.statCard {
+  height: 100%;
+  border-radius: 20px !important;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  cursor: default;
+  background: white;
+  border: 1px solid #e8ecf0;
+}
+
+.statCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+.chartCard {
+  border-radius: 20px !important;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  background: white;
+  border: 1px solid #e8ecf0;
+}
+
+.chartCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+.infoCard {
+  border-radius: 20px !important;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
+  border: 1px solid #e8ecf0;
+}
+
+.statIcon {
+  margin-bottom: 12px;
+}
+
+.statValue {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #2c3e4e;
+}
+
+.statDetails {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.homeStatChip {
+  background-color: #e8f0f8 !important;
+  color: #5b7c9e !important;
+  font-weight: 500 !important;
+}
+
+.awayStatChip {
+  background-color: #f0ecf5 !important;
+  color: #8b7e9e !important;
+  font-weight: 500 !important;
+}
+
+.statusStats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.statusStats :global(.MuiChip-root) {
+  background-color: #f0f2f5;
+  color: #5b6e7e;
+}
+
+.extraStat {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.progressStats {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: #f5f7f9;
+  border-radius: 24px;
+}
+
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  background: #f5f7f9;
+  border-radius: 24px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    padding: 4px;
+  }
+
+  .title {
+    font-size: 1.25rem !important;
+    margin-bottom: 20px !important;
+  }
+
+  .chartTitle {
+    font-size: 1rem !important;
+    margin-top: 16px !important;
+  }
+
+  .statValue {
+    font-size: 1.75rem !important;
+  }
+}

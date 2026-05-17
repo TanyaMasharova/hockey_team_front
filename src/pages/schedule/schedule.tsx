@@ -74,24 +74,24 @@ export const SchedulePage = () => {
         <Switch activeTab={activeTab} setActiveTab={setActiveTab} />
         {activeTab === 'schedule' ? (
           <>
-            <TableMatches matches={matches} />
             {matches && matches.length > 0 && (
               <>
                 <h3>Распределение матчей</h3>
                 <FutureMatchesChart matches={matches} />
               </>
             )}
+            <TableMatches matches={matches} />
           </>
         ) : (
           <>
-            <TableLastMatches matches={lastMatches} />
-            {/*вот тут нужна круговая диаграмма выигранных и проигранных матсей. так же  */}
-            {console.log(stats)}
             {stats && (
               <div style={{ marginTop: '2rem', minHeight: 400, width: '100%' }}>
                 <MatchStatsChart stats={stats} />
               </div>
             )}
+            <TableLastMatches matches={lastMatches} />
+            {/*вот тут нужна круговая диаграмма выигранных и проигранных матсей. так же  */}
+            {console.log(stats)}
           </>
         )}
       </div>

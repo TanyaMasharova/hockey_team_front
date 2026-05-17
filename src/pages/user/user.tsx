@@ -1,90 +1,71 @@
 'use client';
+import { useState } from 'react';
 import { Header } from '@/widgets/Header';
-import {
-  EditableField,
-  EditableDateField,
-  AvatarEdit,
-  useEditProfile,
-} from '@/features/user/edit-profile';
+import { FormUser } from '@/widgets/FormUser/ui/FormUser';
+import { TableMyTickets } from '@/widgets/TableMyTickets/ui/TableMyTickets';
+import { FanStats } from '@/widgets/FanStats/FanStats';
+import { Tabs, Tab, Box, Paper } from '@mui/material';
+import { Person, ConfirmationNumber, Assessment } from '@mui/icons-material';
 import styles from './user.module.css';
-import { useState, useEffect } from 'react';
-import { getUserById } from '@/shared/api/user';
-import { useError } from '@/shared/context/ErrorContext';
-import { UserData } from '@/entities/User';
 
-// TODO: заменить на реальные данные из БД
-const mockUserData = {
-  avatar: 'https://i.pravatar.cc/300',
-  lastName: 'Иванов',
-  firstName: 'Иван',
-  patronymic: 'Иванович',
-  phone: '+7 (999) 123-45-67',
-  email: 'ivan@example.com',
-  birthDate: '1990-01-15',
-};
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`user-tabpanel-${index}`}
+      aria-labelledby={`user-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+    </div>
+  );
+}
 
 export const UserPage = () => {
-  const [userDataServer, setUserDataServer] = useState<UserData>();
-  const { errors, setError, clearError } = useError();
+  const [tabValue, setTabValue] = useState(0);
 
-  useEffect(() => {
-    const fetchUseData = async () => {
-      try {
-        const data = await getUserById(localStorage['user']);
-        setUserDataServer(data);
-      } catch (error) {
-        setError('Failed to load matches stats');
-      }
-    };
-    fetchUseData();
-  }, []);
-
-  const { userData, handleFieldSave, handleAvatarChange } = useEditProfile(
-    userDataServer ? userDataServer : mockUserData
-  );
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
 
   return (
     <div>
       <Header />
-      <div className={styles.container}>
-        <AvatarEdit avatarUrl={userData.avatar} onAvatarChange={handleAvatarChange} />
+      <Box className={styles.pageContainer}>
+        <Paper className={styles.tabsContainer} elevation={0}>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            indicatorColor="primary"
+            textColor="primary"
+          >
+            <Tab icon={<Person />} label="Личные данные" />
+            <Tab icon={<ConfirmationNumber />} label="Мои билеты" />
+            <Tab icon={<Assessment />} label="Статистика" />
+          </Tabs>
+        </Paper>
 
-        <div className={styles.formContainer}>
-          <EditableField
-            label="Фамилия"
-            value={userData.lastName}
-            onSave={handleFieldSave('lastName')}
-          />
-          <EditableField
-            label="Имя"
-            value={userData.firstName}
-            onSave={handleFieldSave('firstName')}
-          />
-          <EditableField
-            label="Отчество"
-            value={userData.patronymic}
-            onSave={handleFieldSave('patronymic')}
-          />
-          <EditableField
-            label="Телефон"
-            value={userData.phone}
-            onSave={handleFieldSave('phone')}
-            type="tel"
-            mask="+7 (999) 999-99-99"
-          />
-          <EditableField
-            label="Email"
-            value={userData.email}
-            onSave={handleFieldSave('email')}
-            type="email"
-          />
-          <EditableDateField
-            label="Дата рождения"
-            value={userData.birthDate}
-            onSave={handleFieldSave('birthDate')}
-          />
-        </div>
-      </div>
+        <TabPanel value={tabValue} index={0}>
+          <FormUser />
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={1}>
+          <TableMyTickets />
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={2}>
+          <FanStats />
+        </TabPanel>
+      </Box>
     </div>
   );
 };

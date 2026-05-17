@@ -1,0 +1,16 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+}
+
+.paper {
+  padding: 40px 32px;
+  border-radius: 16px;
+}
+
+.alert {
+  margin-bottom: 16px;
+}

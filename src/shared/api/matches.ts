@@ -33,3 +33,20 @@ export const getMatchesStats = async () => {
     throw error;
   }
 };
+
+// shared/api/matches.ts
+export const getMatchById = async (id: string) => {
+  const response = await fetch(`/api/matches/${id}`);
+  return response.json();
+};
+
+// shared/api/stadium.ts
+export const getStadiumSectors = async () => {
+  const response = await fetch('/api/stadium/sectors');
+  return response.json();
+};
+
+export const getSeatsBySector = async (sectorId: string) => {
+  const response = await fetch(`/api/stadium/sectors/${sectorId}/seats`);
+  return response.json();
+};

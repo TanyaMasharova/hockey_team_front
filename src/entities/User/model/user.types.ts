@@ -1,9 +1,7 @@
 export interface UserData {
   avatar?: string;
-  lastName: string;
-  firstName: string;
-  patronymic: string;
+  full_name: string;
   phone: string;
   email: string;
-  birthDate: string | null;
+  birth_date: string | null;
 }

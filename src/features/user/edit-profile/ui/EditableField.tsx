@@ -1,16 +1,13 @@
+'use client';
+import { TextField, IconButton, Box } from '@mui/material';
+import { Edit, Check, Close } from '@mui/icons-material';
 import { useState } from 'react';
-import { TextField, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
-import InputMask from 'react-input-mask';
-import { ViewModeField } from '@/shared/ui/ViewModeField/ViewModeField';
-import styles from './EditableField.module.css';
+import { PatternFormat } from 'react-number-format';
 
 interface EditableFieldProps {
   label: string;
   value: string;
-  onSave: (newValue: string) => void;
+  onSave: (value: string) => Promise<void>;
   type?: 'text' | 'email' | 'tel';
   mask?: string;
 }
@@ -24,10 +21,24 @@ export const EditableField = ({
 }: EditableFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSave = () => {
-    onSave(editValue);
-    setIsEditing(false);
+  const handleSave = async () => {
+    if (editValue === value) {
+      setIsEditing(false);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await onSave(editValue);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Save failed:', error);
+      setEditValue(value);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -37,52 +48,52 @@ export const EditableField = ({
 
   if (isEditing) {
     return (
-      <div className={styles.fieldWithEdit}>
-        <div className={styles.fieldWrapper}>
-          {mask ? (
-            <InputMask
-              mask={mask}
-              maskChar="_"
-              value={editValue}
-              onChange={e => setEditValue(e.target.value)}
-            >
-              {(inputProps: any) => (
-                <TextField {...inputProps} fullWidth label={label} type={type} autoFocus />
-              )}
-            </InputMask>
-          ) : (
-            <TextField
-              fullWidth
-              label={label}
-              value={editValue}
-              onChange={e => setEditValue(e.target.value)}
-              type={type}
-              autoFocus
-            />
-          )}
-        </div>
-        <div className={styles.editIcon}>
-          <IconButton onClick={handleSave} color="primary" size="small">
-            <SaveIcon />
-          </IconButton>
-          <IconButton onClick={handleCancel} color="error" size="small">
-            <CancelIcon />
-          </IconButton>
-        </div>
-      </div>
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+        {mask && type === 'tel' ? (
+          <PatternFormat
+            format={mask}
+            mask="_"
+            value={editValue}
+            onValueChange={values => setEditValue(values.formattedValue)}
+            customInput={TextField}
+            fullWidth
+            label={label}
+            autoFocus
+            disabled={isLoading}
+          />
+        ) : (
+          <TextField
+            fullWidth
+            label={label}
+            type={type}
+            value={editValue}
+            onChange={e => setEditValue(e.target.value)}
+            autoFocus
+            disabled={isLoading}
+          />
+        )}
+        <IconButton onClick={handleSave} color="primary" disabled={isLoading} size="small">
+          <Check />
+        </IconButton>
+        <IconButton onClick={handleCancel} disabled={isLoading} size="small">
+          <Close />
+        </IconButton>
+      </Box>
     );
   }
 
   return (
-    <div className={styles.fieldWithEdit}>
-      <div className={styles.fieldWrapper}>
-        <ViewModeField label={label} value={value} onClick={() => setIsEditing(true)} />
-      </div>
-      <div className={styles.editIcon}>
-        <IconButton onClick={() => setIsEditing(true)} size="small">
-          <EditIcon />
-        </IconButton>
-      </div>
-    </div>
+    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+      <TextField
+        fullWidth
+        label={label}
+        value={value}
+        InputProps={{ readOnly: true }}
+        variant="outlined"
+      />
+      <IconButton onClick={() => setIsEditing(true)} size="small" sx={{ mt: 1 }}>
+        <Edit />
+      </IconButton>
+    </Box>
   );
 };
