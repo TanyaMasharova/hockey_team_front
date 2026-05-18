@@ -8,10 +8,10 @@ import {
   Box,
   CircularProgress,
   Button,
-  Grid,
   Card,
   CardContent,
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import {
   People,
   ConfirmationNumber,

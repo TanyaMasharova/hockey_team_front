@@ -15,8 +15,8 @@ export interface MatchLast {
   match_date: string;
   our_score: number;
   opponent_score: number;
-  status: 'live' | 'finished' | 'cancelled';
-  win_type: 'regular' | 'overtime' | 'penalty';
+  status: 'scheduled' | 'live' | 'finished' | 'cancelled';
+  win_type?: 'regular' | 'overtime' | 'penalty';
 }
 
 export interface WinLossDetails {

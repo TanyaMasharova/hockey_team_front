@@ -139,15 +139,15 @@ export const AdminCharts = () => {
               <YAxis yAxisId="left" />
               <YAxis yAxisId="right" orientation="right" />
               <Tooltip
-                formatter={(value: any, name: string, props: any) => {
+                formatter={(value: any, name?: string | number, props?: any) => {
                   // Проверяем по dataKey, который передаётся в props
-                  if (props.dataKey === 'revenue') {
+                  if (props?.dataKey === 'revenue') {
                     return [`${formatNumber(value)} ₽`, 'Выручка'];
                   }
-                  if (props.dataKey === 'tickets') {
+                  if (props?.dataKey === 'tickets') {
                     return [formatNumber(value), 'Количество билетов'];
                   }
-                  return [formatNumber(value), name];
+                  return [formatNumber(value), String(name ?? '')];
                 }}
               />
               <Legend />
@@ -189,16 +189,16 @@ export const AdminCharts = () => {
               <XAxis type="number" domain={[0, 100]} />
               <YAxis type="category" dataKey="sector" width={60} />
               <Tooltip
-                formatter={(value: any, name: string, props: any) => {
-                  if (props.dataKey === 'sold') {
+                formatter={(value: any, name?: string | number, props?: any) => {
+                  if (props?.dataKey === 'sold') {
                     return [`${value} билетов`, 'Продано'];
                   }
-                  if (props.dataKey === 'occupancy_percent') {
+                  if (props?.dataKey === 'occupancy_percent') {
                     // Считаем процент: (проданные места / вместимость 250) * 100
                     const occupancyValue = (value / 250) * 100;
                     return [`${occupancyValue.toFixed(1)}%`, 'Заполняемость'];
                   }
-                  return [value, name];
+                  return [value, String(name ?? '')];
                 }}
               />
               <Legend />
@@ -207,8 +207,6 @@ export const AdminCharts = () => {
                 dataKey="occupancy_percent"
                 fill={COLORS.warning}
                 name="Заполняемость (%)"
-                // Преобразуем данные для отображения в процентах
-                tickFormatter={value => `${((value / 250) * 100).toFixed(0)}%`}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -234,7 +232,9 @@ export const AdminCharts = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={true}
-                  label={({ status, percent }) => {
+                  label={(props: any) => {
+                    const status = props?.status;
+                    const percent = props?.percent ?? 0;
                     // Показываем все подписи, но для маленьких выносим снаружи
                     const percentage = (percent * 100).toFixed(0);
                     if (percent < 0.03) {
@@ -251,8 +251,8 @@ export const AdminCharts = () => {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: any, name: string) => {
-                    const statusName = getStatusLabel(name);
+                  formatter={(value: any, name?: string | number) => {
+                    const statusName = getStatusLabel(String(name ?? ''));
                     return [
                       `${value} билетов (${((value / ticketStatus.reduce((sum: number, item: any) => sum + item.count, 0)) * 100).toFixed(1)}%)`,
                       statusName,
@@ -282,9 +282,9 @@ export const AdminCharts = () => {
               <XAxis dataKey="sector" angle={-45} textAnchor="end" height={80} />
               <YAxis />
               <Tooltip
-                formatter={(value: any, name: string) => {
+                formatter={(value: any, name?: string | number) => {
                   if (name === 'avg_price') return [`${formatNumber(value)} ₽`, 'Средняя цена'];
-                  return [formatNumber(value), name];
+                  return [formatNumber(value), String(name ?? '')];
                 }}
               />
               <Legend />

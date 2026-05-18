@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Container,
-  Grid,
   Typography,
   Box,
   CircularProgress,
@@ -13,6 +12,7 @@ import {
   StepLabel,
   Paper,
 } from '@mui/material';
+import GridLegacy from '@mui/material/GridLegacy';
 import {
   getMatchById,
   getStadiumSectors,
@@ -209,8 +209,8 @@ export default function PurchaseTicketPage() {
           ))}
         </Stepper>
 
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={7}>
+        <GridLegacy container spacing={4}>
+          <GridLegacy item xs={12} md={7}>
             {activeStep === 0 && (
               <SectorSelector
                 sectors={sectors}
@@ -249,12 +249,12 @@ export default function PurchaseTicketPage() {
                 loading={purchasing}
               />
             )}
-          </Grid>
+          </GridLegacy>
 
-          <Grid item xs={12} md={5}>
+          <GridLegacy item xs={12} md={5}>
             <MatchInfo match={match} />
-          </Grid>
-        </Grid>
+          </GridLegacy>
+        </GridLegacy>
       </Paper>
     </Container>
   );

@@ -44,7 +44,7 @@ export const TableLastMatches = ({ matches, count }: TableMatchesProps) => {
   const formatScore = (
     ourScore: number,
     opponentScore: number,
-    winType: 'regular' | 'overtime' | 'penalty'
+    winType: 'regular' | 'overtime' | 'penalty' = 'regular'
   ) => {
     let suffix = '';
     if (winType === 'overtime') {

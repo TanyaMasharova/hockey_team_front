@@ -69,3 +69,5 @@ export const UserPage = () => {
     </div>
   );
 };
+
+export default UserPage;

@@ -1,4 +1,5 @@
-import { Grid, Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import { Chair, Star, EmojiEvents } from '@mui/icons-material';
 
 interface Sector {

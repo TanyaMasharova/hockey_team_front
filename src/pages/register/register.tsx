@@ -125,7 +125,12 @@ export const RegisterPage = () => {
       setError('');
     };
 
-  const handleQuickFill = (testData: (typeof testAccounts)[0]) => {
+  const handleQuickFill = (testData: {
+    fullName: string;
+    email: string;
+    phone: string;
+    password: string;
+  }) => {
     setFormData({
       fullName: testData.fullName,
       email: testData.email,
@@ -466,3 +471,5 @@ export const RegisterPage = () => {
     </div>
   );
 };
+
+export default RegisterPage;

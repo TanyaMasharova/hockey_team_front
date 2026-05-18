@@ -103,8 +103,7 @@ export default function SeatSelector({
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {sortedSeats.map(seat => {
                   const isSelected = selectedSeat?.ID === seat.ID;
-                  // Проверяем, занято ли место (поддерживаем оба варианта написания)
-                  const isTaken = seat.IsTaken === true || seat.IsTaken === true;
+                  const isTaken = seat.IsTaken;
 
                   return (
                     <Button

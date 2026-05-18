@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, Alert, Grid } from '@mui/material';
+import { Box, TextField, Button, Typography, Alert } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import { ArrowBack } from '@mui/icons-material';
 import { getUserById } from '@/shared/api/user';
 

@@ -17,10 +17,10 @@ import {
   TableSortLabel,
   Card,
   CardContent,
-  Grid,
   LinearProgress,
   Divider,
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import {
   Event,
   LocationOn,

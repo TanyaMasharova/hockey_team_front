@@ -2,13 +2,15 @@ import { api } from '@/shared/config/axiosConfig';
 
 export interface Match {
   id: string;
-  opponent_name: string;
+  opponent: string;
+  logo_opponent: string;
   match_date: string;
-  home_away: string;
+  home_away: 'home' | 'away';
   our_score: number;
   opponent_score: number;
-  status: string;
+  status: 'scheduled' | 'live' | 'finished' | 'cancelled';
   is_derby: boolean;
+  win_type?: 'regular' | 'overtime' | 'penalty';
 }
 
 export interface Sector {

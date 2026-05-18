@@ -98,3 +98,5 @@ export const SchedulePage = () => {
     </>
   );
 };
+
+export default SchedulePage;

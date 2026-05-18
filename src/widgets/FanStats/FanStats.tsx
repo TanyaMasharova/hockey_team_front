@@ -5,12 +5,12 @@ import {
   CardContent,
   Typography,
   Box,
-  Grid,
   LinearProgress,
   Divider,
   Chip,
   CircularProgress,
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import {
   Event,
   ConfirmationNumber,
@@ -563,11 +563,11 @@ export const FanStats = () => {
                         border: 'none',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                       }}
-                      formatter={(value: any, name: string, props: any) => {
-                        if (props && props.dataKey === 'spent') {
+                      formatter={(value: any, name?: string | number, props?: any) => {
+                        if (props?.dataKey === 'spent') {
                           return [formatPrice(value), 'Траты'];
                         }
-                        return [value, 'Матчей'];
+                        return [value, String(name ?? 'Матчей') || 'Матчей'];
                       }}
                     />
                     <Legend />
@@ -609,9 +609,11 @@ export const FanStats = () => {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ sector, percent }) =>
-                        percent > 0.05 ? `${sector} (${(percent * 100).toFixed(0)}%)` : ''
-                      }
+                      label={(props: any) => {
+                        const sector = props?.sector ?? '';
+                        const percent = props?.percent ?? 0;
+                        return percent > 0.05 ? `${sector} (${(percent * 100).toFixed(0)}%)` : '';
+                      }}
                       outerRadius={100}
                       dataKey="count"
                     >
@@ -648,7 +650,11 @@ export const FanStats = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    label={(props: any) => {
+                      const name = props?.name ?? '';
+                      const percent = props?.percent ?? 0;
+                      return `${name} (${(percent * 100).toFixed(0)}%)`;
+                    }}
                     outerRadius={90}
                     dataKey="value"
                   >

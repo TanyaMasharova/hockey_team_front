@@ -7,6 +7,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
+  id: string;
   access_token: string;
   token_type: string;
   role: string;
@@ -29,9 +30,11 @@ export interface RegisterResponse {
 
 export interface User {
   id: string;
+  avatar?: string;
   phone: string;
   email: string;
   full_name: string;
+  birth_date?: string | null;
   created_at: string;
   updated_at: string;
 }
